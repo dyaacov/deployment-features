@@ -1,23 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>MY APP</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous">
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/js/bootstrap.min.js" integrity="sha384-BLiI7JTZm+JWlgKa0M0kGRpJbF2J8q+qreVrKBC47e3K6BW78kGLrCkeRX6I9RoK" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta charset="utf-8"/>
+    <title>Features</title>
+
+
+    <link href='http://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
+    <!-- Load jQuery -->
+    <script src="//code.jquery.com/jquery-1.12.3.js"></script>
+    <!-- Load JsRender latest version, from www.jsviews.com: -->
+    <script src="//www.jsviews.com/download/jsrender.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
+          integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+            integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+            crossorigin="anonymous"></script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.9/css/bootstrap-dialog.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.9/js/bootstrap-dialog.min.js"></script>
+
+
+    <link rel="stylesheet" type="text/css" href="static/css/app.css"/>
+
 </head>
-<body>
-  <div class="panel panel-default" style="padding: 10px;">
-    <div class="panel-body">
-      <form action="/quotes" method="POST">
-        <input class="form-control" type="text" placeholder="name" name="name">
-        <input class="form-control" type="text" placeholder="quote" name="quote">
-        <button class="btn btn-primary">Submit</button>
-        <button class="btn btn-info" type="button">Go!</button>
-    </form>
-    </div>
-  </div>
+<body style="padding: 30px;" >
+
+<script language="JavaScript">
+    window.isAdmin = window.location.search.indexOf("admin")>=0;
+    if(window.isAdmin){
+        document.write('<button type="button" class="btn btn-default navbar-btn" onclick="sendEmail();">Send email</button>');
+    }
+</script>
+
+<div class="panel panel-info">
+    <!-- Default panel contents -->
+    <div class="panel-heading">Features</div>
+    <table class=table>
+        <thead>
+        <tr>
+            <th></th>
+            <th>Owner</th>
+            <th>Task</th>
+        </tr>
+        </thead>
+        <tbody>
+        <script id="featuresTemplate" type="text/x-jsrender">
+            <tr id="tr-{{>id}}">
+                <td style="text-align: center; vertical-align: middle; width: 100px;">
+                    <input type="checkbox" id="{{>id}}" onchange="verifyChanged(this)"/>
+                </td>
+                <td style="width: 200px;">{{>authorName}}</td>
+                <td><a href="{{>jiraURL}}" target="_blank">{{>text}}</a></td>
+            </tr>
+
+        </script>
+        </tbody>
+    </table>
+</div>
+
+
+<script src="static/js/app.js"></script>
 
 </body>
 </html>

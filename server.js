@@ -30,11 +30,44 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html')
 })
 
-app.post('/quotes', (req, res) => {
-  db.collection('quotes').save(req.body, (err, result) => {
-    if (err) return console.log(err)
+app.get('/generate', (req, res) => {
+    var features = JSON.parse('[{"id": 1, "authorName": "dekel", "text": "feature1"}]');
+    db.collection('features').remove();
+    db.collection('verified').remove();
+    db.collection('features').save(features[0], (err, result) => {
+    if (err) return res.send(err)
 
     console.log('saved to database')
     res.redirect('/')
+  })
+})
+
+app.get('/features', (req, res) => {
+    db.collection('features').find().toArray(function(err, docs){
+      res.send(docs)
+  });
+})
+
+app.get('/verified', (req, res) => {
+    db.collection('verified').find().toArray(function(err, docs){
+      res.send(docs)
+  });
+})
+
+app.post('/verify/:id', (req, res) => {
+  var obj = {"id": req.params.id};
+  db.collection('verified').save(obj, (err, result) => {
+    if (err) return console.log(err)
+
+    console.log('saved to database')
+  })
+})
+
+app.delete('/verify/:id', (req, res) => {
+  var obj = {"id": req.params.id};
+  db.collection('verified').deleteOne(obj, (err, result) => {
+    if (err) return console.log(err)
+
+    console.log('saved to database')
   })
 })
