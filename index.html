@@ -3,7 +3,8 @@
     <meta charset="utf-8"/>
     <title>Features</title>
 
-
+    <link rel="shortcut icon" href="static/images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="static/images/favicon.ico" type="image/x-icon">
     <link href='http://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
     <!-- Load jQuery -->
     <script src="//code.jquery.com/jquery-1.12.3.js"></script>
@@ -52,12 +53,12 @@
         </thead>
         <tbody>
         <script id="featuresTemplate" type="text/x-jsrender">
-            <tr id="tr-{{>id}}">
+            <tr id="tr-{{>_id}}">
                 <td style="text-align: center; vertical-align: middle; width: 100px;">
-                    <input type="checkbox" id="{{>id}}" onchange="verifyChanged(this)"/>
+                    <input type="checkbox" id="{{>_id}}" onchange="verifyChanged(this)"/>
                 </td>
-                <td style="width: 200px;">{{>authorName}}</td>
-                <td><a href="{{>jiraURL}}" target="_blank">{{>text}}</a></td>
+                <td style="width: 200px;">{{>author_name}}</td>
+                <td>{{>message}}</td>
             </tr>
 
         </script>
