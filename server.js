@@ -4,6 +4,8 @@ const app = express();
 var winston = require('winston'); // logger
 var jsdom = require("jsdom"); // DOM parser
 var request = require('request');
+var git = require('simple-git');
+var config = require('./config');
 
 winston.configure({
     transports: [
@@ -17,11 +19,11 @@ app.use('/static', express.static('public'))
 const MongoClient = require('mongodb').MongoClient
 
 var db
-MongoClient.connect('mongodb://dekely:Jacada2008!@ds113628.mlab.com:13628/dekely', (err, database) => {
+MongoClient.connect(config.db_url, (err, database) => {
   if (err) return console.log(err)
   db = database
-  app.listen(3000, () => {
-    console.log('listening on 3000')
+  app.listen(config.server_port, () => {
+    console.log('listening on '+config.server_port)
     winston.info('Hello again distributed logs');
   })
 })
@@ -31,20 +33,8 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html')
 })
 
-app.get('/generate', (req, res) => {
-    var features = JSON.parse('[{"id": 1, "authorName": "dekel", "text": "feature1"}]');
-    db.collection('features').remove();
-    db.collection('verified').remove();
-    db.collection('features').save(features[0], (err, result) => {
-    if (err) return res.send(err)
-
-    console.log('saved to database')
-    res.redirect('/')
-  })
-})
-
 app.get('/features', (req, res) => {
-    db.collection('features').find().toArray(function(err, docs){
+    db.collection('features').find().sort({ 'author_name': -1 }).toArray(function(err, docs){
       res.send(docs)
   });
 })
@@ -73,6 +63,36 @@ app.delete('/verify/:id', (req, res) => {
   })
 })
 
+app.get('/generate', (req, res) => {
+/*
+    ListLogLine {
+         hash: '9dff13430357be4ecb3236cc3e6c71f7b7ea38a7',
+         date: '2016-12-04 16:53:37 +0200',
+         message: 'deployment-features (HEAD -> master, origin/master)',
+         author_name: 'Dekel Yaacov',
+         author_email: 'dekely@checkpoint.com' }
+      */
+    db.collection('verified').remove();
+    db.collection('features').remove();
+    git().log({'from':'08d782ee4a0e40829d5c0ef9640119bafef1acd3', 'to':'master'}, function(err, log) {
+            console.log(log.all);
+            var lines = log.all;
+            for (idx in lines) {
+                console.log(lines[idx]);
+                db.collection('features').save(lines[idx], (err, result) => {
+                    if (err) {
+                        return console.log(err)
+                    }else{
+                        console.log(lines[idx])
+                    }
+                  })
+            }
+            console.log('saved to database')
+            res.redirect('/')
+        });
+
+})
+
 app.get('/head', (req, res) => {
   request('https://il-web.locsec.net/accounts/login/', function (error, response, body) {
     if (!error && response.statusCode == 200) {
@@ -88,17 +108,7 @@ app.get('/head', (req, res) => {
         })
      }
    })
-  jsdom.env({
-    url: "https://il-web.locsec.net/accounts/login/",
-    scripts: ["http://code.jquery.com/jquery.js"],
-    done: function (err, window) {
-      var $ = window.$;
-      console.log("HN Links");
-      $("td.title:not(:last) a").each(function() {
-        console.log(" -", $(this).text());
-      });
-    }
-    });
+
 })
 
 function getCookies(response){
@@ -115,34 +125,3 @@ function getCookies(response){
     }
     return cookies;
 }
-
-/*
-@RequestMapping("/head")
-public String head() throws IOException {
-
-    Map<String, String> cookies = Jsoup.connect("https://il-web.locsec.net/accounts/login/").execute().cookies();
-    String csrftoken = cookies.get("csrftoken");
-    String sessionid = cookies.get("sessionid");
-    String object = restTemplate.getForObject("https://il-web.locsec.net/accounts/login/", String.class);
-
-    HttpHeaders requestHeaders = new HttpHeaders();
-    requestHeaders.set("Referer", "https://il-web.locsec.net/accounts/login/\\?next=/");
-    requestHeaders.set("Cookie", "csrftoken="+csrftoken+"; sessionid="+sessionid);
-
-    MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-    body.set("csrfmiddlewaretoken", csrftoken);
-    body.set("username", "dekely");
-    body.set("password", "Lacoon01!");
-
-    HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
-    ResponseEntity<String> entity = restTemplate.exchange("https://il-web.locsec.net/accounts/login/", HttpMethod.POST, httpEntity, String.class);
-    sessionid = entity.getHeaders().get("Set-Cookie").get(1).split(";")[0];
-
-    requestHeaders.set("Cookie", "csrftoken="+csrftoken+"; "+sessionid);
-    httpEntity = new HttpEntity<Object>(body, requestHeaders);
-    Map exchange = restTemplate.exchange("https://il-web.locsec.net/api/head", HttpMethod.GET, httpEntity, Map.class).getBody();
-    List<Map> list = (List<Map>) exchange.get("objects");
-    return (String) list.get(0).get("HEAD");
-
-}
-*/
