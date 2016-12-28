@@ -72,21 +72,12 @@ app.get('/generate', (req, res) => {
          author_name: 'Dekel Yaacov',
          author_email: 'dekely@checkpoint.com' }
       */
-    db.collection('verified').remove();
-    db.collection('features').remove();
+    db.collection('verified').drop();
+    db.collection('features').drop();
     git().log({'from':'08d782ee4a0e40829d5c0ef9640119bafef1acd3', 'to':'master'}, function(err, log) {
             console.log(log.all);
             var lines = log.all;
-            for (idx in lines) {
-                console.log(lines[idx]);
-                db.collection('features').save(lines[idx], (err, result) => {
-                    if (err) {
-                        return console.log(err)
-                    }else{
-                        console.log(lines[idx])
-                    }
-                  })
-            }
+            db.collection('features').insertMany(lines);
             console.log('saved to database')
             res.redirect('/')
         });
