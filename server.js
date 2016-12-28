@@ -32,6 +32,13 @@ MongoClient.connect(config.db_url, (err, database) => {
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html')
 })
+app.post('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html')
+})
+
+app.get('/admin', (req, res) => {
+  res.sendFile(__dirname + '/login.html')
+})
 
 app.get('/features', (req, res) => {
     db.collection('features').find().sort({ 'author_name': -1 }).toArray(function(err, docs){
