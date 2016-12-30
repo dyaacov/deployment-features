@@ -46,19 +46,43 @@
     <table class=table>
         <thead>
         <tr>
-            <th></th>
-            <th>Owner</th>
+            <th class="col-fnf">FnF</th>
+            <th class="col-usweb02" >Us-web02</th>
+            <th class="col-checkpoint" >Checkpoint</th>
+            <th class="col-owner">Owner</th>
             <th>Task</th>
+            <th>Feature Toggle</th>
+            <th class="col-checkbox">Tests</th>
+            <th class="col-checkbox">Demo</th>
         </tr>
         </thead>
         <tbody>
         <script id="featuresTemplate" type="text/x-jsrender">
             <tr id="tr-{{>_id}}">
-                <td style="text-align: center; vertical-align: middle; width: 100px;">
-                    <input type="checkbox" id="{{>_id}}" onchange="verifyChanged(this)"/>
+                <td style="text-align: center; vertical-align: middle; width: 50px;">
+                    <input type="checkbox" id="fnf_{{>_id}}" onchange="verifyChanged(this)"/>
                 </td>
-                <td style="width: 200px;">{{>author_name}}</td>
+                <td style="text-align: center; vertical-align: middle; width: 100px;">
+                    <input type="checkbox" id="usweb02_{{>_id}}" onchange="verifyChanged(this)"/>
+                </td>
+                <td style="text-align: center; vertical-align: middle; width: 100px;">
+                    <input type="checkbox" id="checkpoint_{{>_id}}" onchange="verifyChanged(this)"/>
+                </td>
+                <td class="col-owner">{{>author_name}}</td>
                 <td>{{>message}}</td>
+                <td>
+                    <select onchange="featureFlagChanged(this)">
+                      <option value="na_{{>_id}}">N/A</option>
+                      <option value="on_{{>_id}}" selected="selected">On</option>
+                      <option value="off_{{>_id}}">Off</option>
+                    </select>
+                </td>
+                <td class="col-checkbox">
+                    <input type="checkbox" id="unittests_{{>_id}}" onchange="verifyChanged(this)"/>
+                </td>
+                <td class="col-checkbox">
+                    <input type="checkbox" id="demo_{{>_id}}" onchange="verifyChanged(this)"/>
+                </td>
             </tr>
 
         </script>

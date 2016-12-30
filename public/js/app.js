@@ -6,6 +6,7 @@ var verified = {};
 $.ajax({
   url: '/features'
 }).done(function(data) {
+
     $("tbody").html($("#featuresTemplate").render(data));
 
     setInterval(function(){
@@ -22,7 +23,7 @@ function loadVerified(){
         }).done(function(data) {
             if(Array.isArray(data) && data.length > 0){
                 for (var i in data){
-                    verified[data[i].id] = true;
+                    verified[data[i].id] = verified[data[i]];
                 }
                 markVerified();
             }
@@ -40,19 +41,34 @@ function markVerified(){
 }
 
 function verifyChanged(cb){
-    var url = '/verify/'+cb.id;
-    if(cb.checked){
-    $.ajax({
-                url: url,
-                type: 'POST'
-            });
-    }else{
-        $.ajax({
-            url: url,
-            type: 'DELETE'
-        });
+    var properties = cb.id.split('_');
+    var cbId = properties[1];
+    if(!verified[cbId]){
+        verified[cbId] = {};
     }
-    applyStyle(cb);
+    verified[cbId][properties[0]] = cb.checked;
+    updateServerOnVerifyChanged(cbId);
+
+}
+
+function featureFlagChanged(cb){
+    var properties = cb.value.split('_');
+    var cbId = properties[1];
+    if(!verified[cbId]){
+        verified[cbId] = {};
+    }
+    verified[cbId][properties[0]] = properties[0];
+    updateServerOnVerifyChanged(cbId);
+}
+
+function updateServerOnVerifyChanged(id){
+    var url = '/verify/'+id;
+    $.ajax({
+            url: url,
+            contentType: 'application/json',
+            type: 'POST',
+            data: JSON.stringify(verified[id])
+        });
 }
 
 function sendEmail(){
@@ -79,6 +95,6 @@ function sendEmail(){
 
 function applyStyle(cb){
     if(document.getElementById(cb.id)){
-        document.getElementById("tr-"+cb.id).style["text-decoration"]=cb.checked?"line-through":"";
+        //document.getElementById("tr-"+cb.id.split('_')[1]).style["text-decoration"]=cb.checked?"line-through":"";
     }
 }

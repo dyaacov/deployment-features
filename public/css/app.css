@@ -1,0 +1,15 @@
+.col-fnf, .col-checkbox{
+    text-align: center;
+    vertical-align: middle;
+    width: 50px;
+}
+
+.col-usweb02, .col-checkpoint{
+    text-align: center;
+    vertical-align: middle;
+    width: 100px;
+}
+
+.col-owner{
+    padding-left: 30px !important;
+}
