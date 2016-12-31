@@ -10,7 +10,7 @@ $.ajax({
     $("tbody").html($("#featuresTemplate").render(data));
 
     setInterval(function(){
-        loadVerified()
+        //loadVerified()
     }, 30000);
     loadVerified();
 
@@ -23,7 +23,11 @@ function loadVerified(){
         }).done(function(data) {
             if(Array.isArray(data) && data.length > 0){
                 for (var i in data){
-                    verified[data[i].id] = verified[data[i]];
+                    verified[data[i].id] = data[i];
+                    delete verified[data[i].id]._id;
+                    if(!data[i].featureflag){
+                        verified[data[i].id].featureflag = 'featureflag_na';//set default
+                    }
                 }
                 markVerified();
             }
@@ -32,11 +36,21 @@ function loadVerified(){
 
 //check the verified features
 function markVerified(){
-    for (item in verified){
+    for (itemId in verified){
+        var obj = verified[itemId];
+        document.getElementById('usweb02_'+itemId).checked = obj.usweb02;
+        document.getElementById('fnf_'+itemId).checked = obj.fnf;
+        document.getElementById('checkpoint_'+itemId).checked = obj.checkpoint;
+        document.getElementById('unittests_'+itemId).checked = obj.unittests;
+        document.getElementById('demo_'+itemId).checked = obj.demo;
+        document.getElementById(obj.featureflag+'_'+itemId).selected = 'selected';
+
+        /*
         if(document.getElementById(item)){
             document.getElementById(item).checked = true;
             applyStyle(document.getElementById(item));
         }
+        */
     }
 }
 
@@ -44,7 +58,8 @@ function verifyChanged(cb){
     var properties = cb.id.split('_');
     var cbId = properties[1];
     if(!verified[cbId]){
-        verified[cbId] = {};
+        verified[cbId] = {id:cbId};
+        verified[cbId].featureflag = 'featureflag_na';//set default
     }
     verified[cbId][properties[0]] = cb.checked;
     updateServerOnVerifyChanged(cbId);
@@ -52,17 +67,16 @@ function verifyChanged(cb){
 }
 
 function featureFlagChanged(cb){
-    var properties = cb.value.split('_');
-    var cbId = properties[1];
+    var cbId = cb.id.split('_')[1];
     if(!verified[cbId]){
-        verified[cbId] = {};
+        verified[cbId] = {id:cbId};
     }
-    verified[cbId][properties[0]] = properties[0];
+    verified[cbId].featureflag = cb.value;
     updateServerOnVerifyChanged(cbId);
 }
 
 function updateServerOnVerifyChanged(id){
-    var url = '/verify/'+id;
+    var url = '/verify';
     $.ajax({
             url: url,
             contentType: 'application/json',

@@ -13,7 +13,7 @@ winston.configure({
     ]
   });
 
-app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.json())
 app.use('/static', express.static('public'))
 
 const MongoClient = require('mongodb').MongoClient
@@ -52,9 +52,9 @@ app.get('/verified', (req, res) => {
   });
 })
 
-app.post('/verify/:id', (req, res) => {
-  var obj = {"id": req.params.id};
-  db.collection('verified').save(obj, (err, result) => {
+app.post('/verify', (req, res) => {
+    console.log(req.body)
+  db.collection('verified').update({id: req.body.id}, req.body, {upsert: true}, (err, result) => {
     if (err) return console.log(err)
 
     console.log('saved to database')

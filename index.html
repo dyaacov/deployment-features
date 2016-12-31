@@ -34,8 +34,7 @@
 <body style="padding: 30px;" >
 
 <script language="JavaScript">
-    window.isAdmin = window.location.search.indexOf("admin")>=0;
-    if(window.isAdmin){
+    if(localStorage.getItem('deploymentFeatures.isAdmin')){
         document.write('<button type="button" class="btn btn-default navbar-btn" onclick="sendEmail();">Send email</button>');
     }
 </script>
@@ -71,10 +70,10 @@
                 <td class="col-owner">{{>author_name}}</td>
                 <td>{{>message}}</td>
                 <td>
-                    <select onchange="featureFlagChanged(this)">
-                      <option value="na_{{>_id}}">N/A</option>
-                      <option value="on_{{>_id}}" selected="selected">On</option>
-                      <option value="off_{{>_id}}">Off</option>
+                    <select id="featureflag_{{>_id}}" onchange="featureFlagChanged(this)">
+                      <option id="featureflag_na_{{>_id}}" value="featureflag_na">N/A</option>
+                      <option id="featureflag_on_{{>_id}}" value="featureflag_on">On</option>
+                      <option id="featureflag_off_{{>_id}}" value="featureflag_off">Off</option>
                     </select>
                 </td>
                 <td class="col-checkbox">
