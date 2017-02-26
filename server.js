@@ -4,7 +4,9 @@ const app = express();
 var winston = require('winston'); // logger
 var jsdom = require("jsdom"); // DOM parser
 var request = require('request');
-var git = require('simple-git');
+var home = process.env['HOME'];
+console.log(home);
+var git = require('simple-git')(home+'/sandbox/dashboard');
 var config = require('./config');
 
 winston.configure({
@@ -81,9 +83,17 @@ app.get('/generate', (req, res) => {
       */
     db.collection('verified').drop();
     db.collection('features').drop();
-    git().log({'from':'08d782ee4a0e40829d5c0ef9640119bafef1acd3', 'to':'master'}, function(err, log) {
+    git.log({'from':'develop', 'to':'origin/master'}, function(err, log) {
             console.log(log.all);
             var lines = log.all;
+            var map = {};
+            lines = lines.filter(function(value){
+                if(value.message.indexOf('Merge branch') == 0 || map[value.message]){
+                    return false;
+                }
+                map[value.message] = true;
+                return true;
+            });
             db.collection('features').insertMany(lines);
             console.log('saved to database')
             res.redirect('/')
